@@ -140,7 +140,7 @@ class CMakeBuild(build_ext):
         # wheel.
         for f in ["base", "control", "geometric", "tools", "util"]:
             subprocess.run(
-                [f"cp {extdir}/_{f}.so {extdir}/ompl/{f}/"],
+                [f"mv {extdir}/_{f}.so {extdir}/ompl/{f}/"],
                 cwd=build_temp,
                 check=True,
                 shell=True,
