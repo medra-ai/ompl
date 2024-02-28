@@ -19,6 +19,8 @@ elif [ "${build_os}" == "Darwin" ]; then
     export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
     export HOMEBREW_NO_AUTO_UPDATE=1
 
+    env
+
     # Overwrite whatever Python binaries are shipped in our CI image.
     # see: https://github.com/orgs/Homebrew/discussions/3895
     brew install --force --overwrite python@3.12
