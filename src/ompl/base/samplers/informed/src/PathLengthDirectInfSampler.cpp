@@ -59,6 +59,8 @@ namespace ompl
                                                                unsigned int maxNumberCalls)
           : InformedSampler(probDefn, maxNumberCalls), informedIdx_(0u), uninformedIdx_(0u)
         {
+            rng_.setLocalSeed(42);  // kylc: use determinstic seed
+
             // Variables
             // The number of start states
             unsigned int numStarts;
@@ -180,7 +182,7 @@ namespace ompl
             }
 
             // Create a sampler for the whole space that we can use if we have no information
-            baseSampler_ = InformedSampler::space_->allocDefaultStateSampler();
+            baseSampler_ = InformedSampler::space_->allocStateSampler(); // kylc: use deterministic sampler if set
 
             // Check if the space is compound
             if (!InformedSampler::space_->isCompound())
@@ -205,7 +207,7 @@ namespace ompl
                 uninformedSubSpace_ = InformedSampler::space_->as<CompoundStateSpace>()->getSubspace(uninformedIdx_);
 
                 // Create a sampler for the uniformed subset:
-                uninformedSubSampler_ = uninformedSubSpace_->allocDefaultStateSampler();
+                uninformedSubSampler_ = uninformedSubSpace_->allocStateSampler(); // kylc: use deterministic sampler if set
             }
 
             // Store the foci, first the starts:

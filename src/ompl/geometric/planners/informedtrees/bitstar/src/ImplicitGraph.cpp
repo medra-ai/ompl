@@ -86,6 +86,7 @@ namespace ompl
         BITstar::ImplicitGraph::ImplicitGraph(NameFunc nameFunc)
           : nameFunc_(std::move(nameFunc)), approximationId_(std::make_shared<unsigned int>(1u))
         {
+            rng_ = ompl::RNG(42); // kylc: use determinstic RNG seed
         }
 
         void BITstar::ImplicitGraph::setup(const ompl::base::SpaceInformationPtr &spaceInformation,
@@ -202,7 +203,7 @@ namespace ompl
             queuePtr_ = nullptr;
 
             // Sampling
-            rng_ = ompl::RNG();
+            rng_ = ompl::RNG(42); // kylc: use determinstic RNG seed
             sampler_.reset();
 
             // Containers
