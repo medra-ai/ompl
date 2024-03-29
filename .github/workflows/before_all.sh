@@ -23,7 +23,7 @@ elif [ "${build_os}" == "Darwin" ]; then
 
     # Overwrite whatever Python binaries are shipped in our CI image.
     # see: https://github.com/orgs/Homebrew/discussions/3895
-    brew install --force --overwrite python@3.12
+    brew install --force --overwrite python@3.10
 
     brew install \
         eigen \
