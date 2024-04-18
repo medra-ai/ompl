@@ -108,8 +108,8 @@ namespace
         bool someSeedsGenerated_{false};
         std::uint_fast32_t firstSeed_;
         std::mutex rngMutex_;
-        std::ranlux24_base sGen_;
-        std::uniform_int_distribution<> sDist_;
+        boost::random::mt19937 sGen_;
+        boost::random::uniform_int_distribution<> sDist_;
     };
 
     std::once_flag g_once;
@@ -139,10 +139,10 @@ public:
     using spherical_dist_t = boost::uniform_on_sphere<double, container_type_t>;
 
     /** \brief The resulting variate generator type. */
-    using variate_generator_t = boost::variate_generator<std::mt19937 *, spherical_dist_t>;
+    using variate_generator_t = boost::variate_generator<boost::random::mt19937 *, spherical_dist_t>;
 
     /** \brief Constructor */
-    SphericalData(std::mt19937 *generatorPtr) : generatorPtr_(generatorPtr){};
+    SphericalData(boost::random::mt19937 *generatorPtr) : generatorPtr_(generatorPtr){};
 
     /** \brief The generator for a specified dimension. Will create if not existent */
     container_type_t generate(unsigned int dim)
@@ -177,7 +177,7 @@ private:
     std::vector<dist_gen_pair_t> dimVector_;
 
     /** \brief A pointer to the generator owned by the outer class. Needed for creating new variate_generators */
-    std::mt19937 *generatorPtr_;
+    boost::random::mt19937 *generatorPtr_;
 
     /** \brief Grow the vector until it contains an (empty) entry for the specified dimension. */
     void growVector(unsigned int dim)
