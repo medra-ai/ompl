@@ -40,7 +40,7 @@ jobs:
           path: wheelhouse
 
   prerelease:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/medra'
     runs-on: ubuntu-latest
     concurrency:
       group: push-${{ github.ref_name }}-prerelease
