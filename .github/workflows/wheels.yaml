@@ -42,6 +42,8 @@ jobs:
   prerelease:
     if: github.ref == 'refs/heads/medra'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     concurrency:
       group: push-${{ github.ref_name }}-prerelease
       cancel-in-progress: true
