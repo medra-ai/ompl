@@ -48,7 +48,6 @@
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
-#include "ompl/config.h"
 #include "ompl/util/ProlateHyperspheroid.h"
 
 namespace ompl

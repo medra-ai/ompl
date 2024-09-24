@@ -40,6 +40,7 @@ from os.path import join, dirname
 from sys import argv, setrecursionlimit
 from pygccxml import declarations
 from pygccxml.declarations.runtime_errors import declaration_not_found_t
+import pygccxml.declarations as pd
 from pyplusplus.module_builder import call_policies
 from pyplusplus import function_transformers as FT
 from ompl.bindings_generator import code_generator_t, default_replacement
@@ -244,8 +245,9 @@ class ompl_base_generator_t(code_generator_t):
             try:
                 # create a python type for each of their corresponding state types
                 state = self.ompl_ns.class_('ScopedState< ompl::base::%sStateSpace >' % stype)
-            except:
+            except Exception as e:
                 # ignore errors because of missing Boost.Numpy
+                print(f"Ignoring error due to missing Boost.Numpy: {e}")
                 continue
             state.rename(stype+'State')
             state.operator('=', arg_types=['::ompl::base::State const &']).exclude()
@@ -354,6 +356,7 @@ class ompl_base_generator_t(code_generator_t):
                         try:
                             cls.member_function(method, arg_types=[signature, None]).add_transformation(FT.input(0))
                         except Exception as e:
+                            print(f"Ignoring constraint signature rewrite exception: {e}")
                             pass
 
             cls = self.ompl_ns.class_('Constraint')
@@ -363,9 +366,11 @@ class ompl_base_generator_t(code_generator_t):
                     try:
                         cls.member_function(method, arg_types=[signature]).add_transformation(FT.input(0))
                     except Exception as e:
+                        print(f"Ignoring constraint signature rewrite exception: {e}")
                         pass
 
         except Exception as e:
+            print(f"Ignoring generation exception: {e}")
             pass
 
         # Exclude PlannerData::getEdges function that returns a map of PlannerDataEdge* for now
@@ -693,12 +698,24 @@ class ompl_geometric_generator_t(code_generator_t):
         self.ompl_ns.namespace('geometric').class_('SimpleSetup').add_registration_code( \
             'def("getPlannerAllocator", &ompl::geometric::SimpleSetup::getPlannerAllocator, ' \
             'bp::return_value_policy< bp::copy_const_reference >())')
+        self.std_ns.class_('vector<const ompl::base::State *>').exclude()
+        self.std_ns.class_('vector< std::shared_ptr<ompl::base::SpaceInformation> >').rename('vectorSpaceInformation')
+
+
         self.std_ns.class_('vector< std::shared_ptr<ompl::geometric::BITstar::Vertex> >').exclude()
         self.std_ns.class_('vector< std::shared_ptr<ompl::geometric::aitstar::Vertex> >').exclude()
         self.std_ns.class_('vector< std::shared_ptr<ompl::geometric::eitstar::Vertex> >').exclude()
-        self.std_ns.class_('vector<const ompl::base::State *>').exclude()
+        self.std_ns.class_('vector< std::shared_ptr<ompl::geometric::eitstar::State> >').exclude()
 
-        self.std_ns.class_('vector< std::shared_ptr<ompl::base::SpaceInformation> >').rename('vectorSpaceInformation')
+        try:
+            self.ompl_ns.class_(f'NearestNeighbors<std::shared_ptr<ompl::geometric::aitstar::Vertex>>').exclude()
+        except:
+            pass
+
+        try:
+            self.ompl_ns.class_(f'NearestNeighbors<std::shared_ptr<ompl::geometric::eitstar::State>>').exclude()
+        except:
+            pass
 
         # Using nullptr as a default value in method arguments causes
         # problems with Boost.Python.
@@ -731,6 +748,35 @@ class ompl_geometric_generator_t(code_generator_t):
             planner.add_registration_code("""
             def("checkValidity",&::ompl::base::Planner::checkValidity,
                 &%s::default_checkValidity )""" % planner.wrapper_alias)
+
+            # There is also some issues with Motions, States, and other internal planner data
+            # structures being leaked into the main namespace
+            try:
+                mc = planner.class_("Motion")
+                mc.exclude()
+
+                try:
+                    vc = self.std_ns.class_(f'vector< ompl::geometric::{planner.name}::Motion * >')
+                    vc.exclude()
+                except:
+                    pass
+
+                try:
+                    nn = self.ompl_ns.class_(f'NearestNeighbors<ompl::geometric::{planner.name}::Motion *>')
+                    nn.exclude()
+                except:
+                    pass
+
+                planner.class_('BiDirMotion').exclude()
+            except:
+                pass
+
+
+        try:
+            nn = self.ompl_ns.class_(f'NearestNeighbors<void *>')
+            nn.exclude()
+        except:
+            pass
 
         # The OMPL implementation of PRM uses two threads: one for constructing
         # the roadmap and another for checking for a solution. This causes
@@ -825,6 +871,7 @@ class ompl_geometric_generator_t(code_generator_t):
             self.ompl_ns.class_('KStrategy<unsigned long>').rename('KStrategy')
             self.ompl_ns.class_('KStarStrategy<unsigned long>').rename('KStarStrategy')
             self.ompl_ns.class_('KBoundedStrategy<unsigned long>').rename('KBoundedStrategy')
+
         except declaration_not_found_t:
             self.ompl_ns.class_('NearestNeighbors<unsigned int>').include()
             self.ompl_ns.class_('NearestNeighbors<unsigned int>').rename('NearestNeighbors')
