@@ -62,6 +62,6 @@ jobs:
           tag: "prerelease"
           name: "Development Build"
           allowUpdates: true
-          removeArtifacts: true
+          removeArtifacts: false
           replacesArtifacts: true
           artifacts: "wheelhouse/*"
