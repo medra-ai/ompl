@@ -1030,6 +1030,28 @@ class ompl_tools_generator_t(code_generator_t):
         code_generator_t.filter_declarations(self)
         self.ompl_ns.variables(lambda decl: decl.is_wrapper_needed()).exclude()
 
+        # rename STL vectors of certain types
+        classes = {
+            'vector< unsigned long >': 'vectorSizeT',
+            'vector< int >': 'vectorInt',
+            'vector< double >': 'vectorDouble',
+            'vector< unsigned int >': 'vectorUint',
+            f'vector< {self.string_decl} >': 'vectorString',
+            'vector< std::vector<int> >': 'vectorVectorInt',
+            'vector< std::vector<unsigned int> >': 'vectorVectorUint',
+            'vector< std::vector<double> >': 'vectorVectorDouble',
+            f'vector< std::map< {self.string_decl}, {self.string_decl} > >': 'vectorMapStringToString',
+            f'map< {self.string_decl}, {self.string_decl} > >': 'mapStringToString',
+            'vector< ompl::PPM::Color >': 'vectorPPMColor'
+        }
+        for decl, name in classes.items():
+            try:
+                cls = self.std_ns.class_(decl)
+                cls.include()
+                cls.rename(name)
+            except Exception as err:
+                print(f"{decl=} {name=} {err}")
+
         # rename STL vectors/maps of certain types
         try:
             self.std_ns.class_('vector< ompl::tools::Benchmark::PlannerExperiment >').rename(
@@ -1074,6 +1096,36 @@ class ompl_tools_generator_t(code_generator_t):
             'void(ompl::base::PlannerPtr, ompl::tools::Benchmark::RunProperties&)',
             'PostSetupEvent', 'Post-setup event')
         benchmark_cls.class_('Request').no_init = False
+
+        self.ompl_ns.member_functions('getPlannerAllocator').exclude()
+        self.ompl_ns.member_functions('setPlannerAllocator').exclude()
+        self.ompl_ns.namespace('tools').class_('Thunder').add_registration_code(
+            'def("setPlannerAllocator", &ompl::tools::Thunder::setPlannerAllocator)')
+        self.ompl_ns.namespace('tools').class_('Thunder').add_registration_code( \
+            'def("getPlannerAllocator", &ompl::tools::Thunder::getPlannerAllocator, ' \
+            'bp::return_value_policy< bp::copy_const_reference >())')
+
+        # -- extra skips so Thunder's header parses cleanly --------------------------
+        try:
+            self.ompl_ns.class_('SPARSdb') \
+                .member_functions('getGuardSpacingFactor').exclude()
+
+            self.ompl_ns.free_functions('log').exclude()
+
+            # obscure template that confuses Py++
+            self.std_ns.class_(
+            'map< unsigned long, ompl::base::State * >').exclude()
+            # Exclude the ProlateHyperspheroid Class which needs Eigen, and the associated member
+            # functions in the RNG
+            self.ompl_ns.class_('ProlateHyperspheroid').exclude()
+            self.ompl_ns.class_('RNG').member_functions(
+                'uniformProlateHyperspheroidSurface').exclude()
+            self.ompl_ns.class_('RNG').member_functions(
+                'uniformProlateHyperspheroid').exclude()
+            self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
+        except declaration_not_found_t:
+            pass
+        # ---------------------------------------------------------------------------
 
 class ompl_util_generator_t(code_generator_t):
     def __init__(self):
