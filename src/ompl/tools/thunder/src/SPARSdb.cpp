@@ -824,7 +824,7 @@ bool ompl::geometric::SPARSdb::addPathToRoadmap(const base::PlannerTerminationCo
         addStateToRoadmap(ptc, solutionPath.getState(shuffledID));
     }
 
-    bool benchmarkLogging = true;
+    bool benchmarkLogging = false;
     if (benchmarkLogging)
     {
         OMPL_DEBUG("ompl::geometric::SPARSdb: Benchmark logging enabled (slower)");
