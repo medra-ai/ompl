@@ -1105,7 +1105,6 @@ class ompl_tools_generator_t(code_generator_t):
             'def("getPlannerAllocator", &ompl::tools::Thunder::getPlannerAllocator, ' \
             'bp::return_value_policy< bp::copy_const_reference >())')
 
-        # -- extra skips so Thunder's header parses cleanly --------------------------
         try:
             self.ompl_ns.class_('SPARSdb') \
                 .member_functions('getGuardSpacingFactor').exclude()
@@ -1122,10 +1121,13 @@ class ompl_tools_generator_t(code_generator_t):
                 'uniformProlateHyperspheroidSurface').exclude()
             self.ompl_ns.class_('RNG').member_functions(
                 'uniformProlateHyperspheroid').exclude()
-            self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
         except declaration_not_found_t:
             pass
-        # ---------------------------------------------------------------------------
+
+        self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
+        self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
+        self.ompl_ns.class_('Thunder').member_functions('print').exclude()
+        self.ompl_ns.class_('Thunder').member_functions('printLogs').exclude()
 
 class ompl_util_generator_t(code_generator_t):
     def __init__(self):
