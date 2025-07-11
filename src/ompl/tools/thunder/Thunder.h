@@ -178,6 +178,19 @@ namespace ompl
             /** \brief Allow accumlated experiences to be processed */
             bool doPostProcessing() override;
 
+            /* my overrides */
+            bool setFilePath_(const std::string filePath) {
+                setFilePath(filePath);
+            }
+
+            void setProblemDefinition_(const base::ProblemDefinitionPtr &pdef) {
+                pdef_ = pdef;
+            }
+
+            void setPlanner_(const base::PlannerPtr &planner) {
+                setPlanner(planner);
+            }
+
         protected:
             /**  The maintained experience planner instance */
             base::PlannerPtr rrPlanner_;

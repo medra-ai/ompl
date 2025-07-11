@@ -1029,7 +1029,8 @@ class ompl_tools_generator_t(code_generator_t):
     def filter_declarations(self):
         code_generator_t.filter_declarations(self)
         self.ompl_ns.variables(lambda decl: decl.is_wrapper_needed()).exclude()
-
+        self.ompl_ns.class_('ProblemDefinition').include()
+        
         # rename STL vectors of certain types
         classes = {
             'vector< unsigned long >': 'vectorSizeT',
