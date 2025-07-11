@@ -986,6 +986,14 @@ class ompl_tools_generator_t(code_generator_t):
             return s.str();
         }
         """)
+        replacement['::ompl::tools::Thunder::printLogs'] = ('def("printLogs", &__printLogs)', """
+        std::string __printLogs(%s* obj)
+        {
+            std::ostringstream s;
+            obj->printLogs(s);
+            return s.str();
+        }
+        """)
         replacement['saveDataLog'] = ('def("saveDataLog", &__saveDataLog)', """
         std::string __saveDataLog(%s* obj)
         {
@@ -1052,6 +1060,8 @@ class ompl_tools_generator_t(code_generator_t):
                 cls.rename(name)
             except Exception as err:
                 print(f"{decl=} {name=} {err}")
+
+        self.replace_member_functions(self.ompl_ns.member_functions('printLogs'))
 
         # rename STL vectors/maps of certain types
         try:
@@ -1128,7 +1138,6 @@ class ompl_tools_generator_t(code_generator_t):
         self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
         self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
         self.ompl_ns.class_('Thunder').member_functions('print').exclude()
-        self.ompl_ns.class_('Thunder').member_functions('printLogs').exclude()
 
 class ompl_util_generator_t(code_generator_t):
     def __init__(self):

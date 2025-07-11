@@ -180,7 +180,7 @@ namespace ompl
 
             /* my overrides */
             bool setFilePath_(const std::string filePath) {
-                setFilePath(filePath);
+                return setFilePath(filePath);
             }
 
             void setProblemDefinition_(const base::ProblemDefinitionPtr &pdef) {
@@ -191,6 +191,10 @@ namespace ompl
                 setPlanner(planner);
             }
 
+            geometric::PathGeometric &getSolutionPath_() const {
+                return getSolutionPath();
+            }
+
         protected:
             /**  The maintained experience planner instance */
             base::PlannerPtr rrPlanner_;
@@ -199,7 +203,7 @@ namespace ompl
             base::PlannerPtr planner2_;
 
             /**  Flag indicating whether dual thread scratch planning is enabled */
-            bool dualThreadScratchEnabled_{true};
+            bool dualThreadScratchEnabled_{false};
 
             /** \brief Instance of parallel planning to use for computing solutions in parallel */
             ompl::tools::ParallelPlanPtr pp_;

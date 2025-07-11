@@ -141,7 +141,7 @@ void ompl::tools::Thunder::setup()
                                                                         // this_fraction
             // experienceDB_->getSPARSdb()->setDenseDeltaFraction(0.001);
 
-            experienceDB_->getSPARSdb()->printDebug();
+            // experienceDB_->getSPARSdb()->printDebug();
 
             experienceDB_->load(filePath_);  // load from file
         }
