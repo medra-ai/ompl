@@ -1083,24 +1083,7 @@ class ompl_tools_generator_t(code_generator_t):
             'def("getPlannerAllocator", &ompl::tools::Thunder::getPlannerAllocator, ' \
             'bp::return_value_policy< bp::copy_const_reference >())')
 
-        try:
-            self.ompl_ns.class_('SPARSdb') \
-                .member_functions('getGuardSpacingFactor').exclude()
-
-            self.ompl_ns.free_functions('log').exclude()
-
-            # obscure template that confuses Py++
-            self.std_ns.class_(
-            'map< unsigned long, ompl::base::State * >').exclude()
-            # Exclude the ProlateHyperspheroid Class which needs Eigen, and the associated member
-            # functions in the RNG
-            self.ompl_ns.class_('ProlateHyperspheroid').exclude()
-            self.ompl_ns.class_('RNG').member_functions(
-                'uniformProlateHyperspheroidSurface').exclude()
-            self.ompl_ns.class_('RNG').member_functions(
-                'uniformProlateHyperspheroid').exclude()
-        except declaration_not_found_t:
-            pass
+        self.replace_member_functions(self.ompl_ns.member_functions('printLogs'))
 
         self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
         self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
