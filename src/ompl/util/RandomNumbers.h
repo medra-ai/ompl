@@ -43,6 +43,11 @@
 #include <cstdint>
 #include <algorithm>
 
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/uniform_real.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/mersenne_twister.hpp>
+
 #include "ompl/util/ProlateHyperspheroid.h"
 
 namespace ompl
@@ -187,9 +192,9 @@ namespace ompl
 
         /** \brief The seed used for the instance of a RNG */
         std::uint_fast32_t localSeed_;
-        std::mt19937 generator_;
-        std::uniform_real_distribution<> uniDist_{0, 1};
-        std::normal_distribution<> normalDist_{0, 1};
+        boost::random::mt19937 generator_;
+        boost::random::uniform_real_distribution<> uniDist_{0, 1};
+        boost::random::normal_distribution<> normalDist_{0, 1};
         // A structure holding boost::uniform_on_sphere distributions and the associated boost::variate_generators for
         // various dimension
         std::shared_ptr<SphericalData> sphericalDataPtr_;

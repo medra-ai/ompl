@@ -1029,29 +1029,6 @@ class ompl_tools_generator_t(code_generator_t):
     def filter_declarations(self):
         code_generator_t.filter_declarations(self)
         self.ompl_ns.variables(lambda decl: decl.is_wrapper_needed()).exclude()
-        self.ompl_ns.class_('ProblemDefinition').include()
-        
-        # rename STL vectors of certain types
-        classes = {
-            'vector< unsigned long >': 'vectorSizeT',
-            'vector< int >': 'vectorInt',
-            'vector< double >': 'vectorDouble',
-            'vector< unsigned int >': 'vectorUint',
-            f'vector< {self.string_decl} >': 'vectorString',
-            'vector< std::vector<int> >': 'vectorVectorInt',
-            'vector< std::vector<unsigned int> >': 'vectorVectorUint',
-            'vector< std::vector<double> >': 'vectorVectorDouble',
-            f'vector< std::map< {self.string_decl}, {self.string_decl} > >': 'vectorMapStringToString',
-            f'map< {self.string_decl}, {self.string_decl} > >': 'mapStringToString',
-            'vector< ompl::PPM::Color >': 'vectorPPMColor'
-        }
-        for decl, name in classes.items():
-            try:
-                cls = self.std_ns.class_(decl)
-                cls.include()
-                cls.rename(name)
-            except Exception as err:
-                print(f"{decl=} {name=} {err}")
 
         # rename STL vectors/maps of certain types
         try:
@@ -1128,7 +1105,6 @@ class ompl_tools_generator_t(code_generator_t):
         self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
         self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
         self.ompl_ns.class_('Thunder').member_functions('print').exclude()
-        self.ompl_ns.class_('Thunder').member_functions('printLogs').exclude()
 
 class ompl_util_generator_t(code_generator_t):
     def __init__(self):

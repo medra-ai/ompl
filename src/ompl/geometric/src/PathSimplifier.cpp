@@ -47,7 +47,7 @@
 
 ompl::geometric::PathSimplifier::PathSimplifier(base::SpaceInformationPtr si, const base::GoalPtr &goal,
                                                 const base::OptimizationObjectivePtr &obj)
-  : si_(std::move(si)), freeStates_(true)
+  : si_(std::move(si)), freeStates_(true), rng_(42)
 {
     if (goal)
     {
