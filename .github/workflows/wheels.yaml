@@ -25,10 +25,10 @@ jobs:
         #   pybuilds: cp3{10,11,12,13}-macosx_x86_64
         #   arch: x86_64
         #   id: macos_x86
-        # - os: macos-15
-        #   pybuilds: cp311-macosx_arm64
-        #   arch: arm64
-        #   id: macos_arm64
+        - os: macos-15
+          pybuilds: cp311-macosx_arm64
+          arch: arm64
+          id: macos_arm64
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
