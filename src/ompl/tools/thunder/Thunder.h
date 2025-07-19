@@ -178,6 +178,23 @@ namespace ompl
             /** \brief Allow accumlated experiences to be processed */
             bool doPostProcessing() override;
 
+            /* my overrides */
+            bool setFilePath_(const std::string filePath) {
+                return setFilePath(filePath);
+            }
+
+            void setProblemDefinition_(const base::ProblemDefinitionPtr &pdef) {
+                pdef_ = pdef;
+            }
+
+            void setPlanner_(const base::PlannerPtr &planner) {
+                setPlanner(planner);
+            }
+
+            geometric::PathGeometric &getSolutionPath_() const {
+                return getSolutionPath();
+            }
+
         protected:
             /**  The maintained experience planner instance */
             base::PlannerPtr rrPlanner_;
@@ -186,7 +203,7 @@ namespace ompl
             base::PlannerPtr planner2_;
 
             /**  Flag indicating whether dual thread scratch planning is enabled */
-            bool dualThreadScratchEnabled_{true};
+            bool dualThreadScratchEnabled_{false};
 
             /** \brief Instance of parallel planning to use for computing solutions in parallel */
             ompl::tools::ParallelPlanPtr pp_;

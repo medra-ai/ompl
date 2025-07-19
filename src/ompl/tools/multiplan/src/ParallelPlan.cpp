@@ -97,27 +97,33 @@ ompl::base::PlannerStatus ompl::tools::ParallelPlan::solve(const base::PlannerTe
     foundSolCount_ = 0;
 
     time::point start = time::now();
-    std::vector<std::thread *> threads(planners_.size());
+    // std::vector<std::thread *> threads(planners_.size());
 
     // Decide if we are combining solutions or just taking the first one
     if (hybridize)
-        for (std::size_t i = 0; i < threads.size(); ++i)
-            threads[i] = new std::thread([this, i, minSolCount, maxSolCount, &ptc]
-                                         {
-                                             solveMore(planners_[i].get(), minSolCount, maxSolCount, &ptc);
-                                         });
+        for (std::size_t i = 0; i < planners_.size(); ++i) {
+            // threads[i] = new std::thread([this, i, minSolCount, maxSolCount, &ptc]
+            //                              {
+            //                                  solveMore(planners_[i].get(), minSolCount, maxSolCount, &ptc);
+            //                              });
+            solveMore(planners_[i].get(), minSolCount, maxSolCount, &ptc);
+        }
     else
-        for (std::size_t i = 0; i < threads.size(); ++i)
-            threads[i] = new std::thread([this, i, minSolCount, &ptc]
-                                         {
-                                             solveOne(planners_[i].get(), minSolCount, &ptc);
-                                         });
+        for (std::size_t i = 0; i < planners_.size(); ++i) {
+            // threads[i] = new std::thread([this, i, minSolCount, &ptc]
+            //                              {
+            //                                  solveOne(planners_[i].get(), minSolCount, &ptc);
+            //                              });
+            solveOne(planners_[i].get(), minSolCount, &ptc);
+            if (pdef_->hasSolution())
+                break;
+        }
 
-    for (auto &thread : threads)
-    {
-        thread->join();
-        delete thread;
-    }
+    // for (auto &thread : threads)
+    // {
+    //     thread->join();
+    //     delete thread;
+    // }
 
     if (hybridize)
     {

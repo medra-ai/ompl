@@ -1075,6 +1075,20 @@ class ompl_tools_generator_t(code_generator_t):
             'PostSetupEvent', 'Post-setup event')
         benchmark_cls.class_('Request').no_init = False
 
+        self.ompl_ns.member_functions('getPlannerAllocator').exclude()
+        self.ompl_ns.member_functions('setPlannerAllocator').exclude()
+        self.ompl_ns.namespace('tools').class_('Thunder').add_registration_code(
+            'def("setPlannerAllocator", &ompl::tools::Thunder::setPlannerAllocator)')
+        self.ompl_ns.namespace('tools').class_('Thunder').add_registration_code( \
+            'def("getPlannerAllocator", &ompl::tools::Thunder::getPlannerAllocator, ' \
+            'bp::return_value_policy< bp::copy_const_reference >())')
+
+        self.replace_member_functions(self.ompl_ns.member_functions('printLogs'))
+
+        self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
+        self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
+        self.ompl_ns.class_('Thunder').member_functions('print').exclude()
+
 class ompl_util_generator_t(code_generator_t):
     def __init__(self):
         replacement = default_replacement

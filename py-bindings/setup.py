@@ -165,5 +165,5 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     package_dir={"ompl": "./ompl"},
-    version=version,
+    version=f"{version}+medra1",
 )
