@@ -1086,6 +1086,22 @@ class ompl_tools_generator_t(code_generator_t):
         self.replace_member_functions(self.ompl_ns.member_functions('printLogs'))
 
         self.ompl_ns.class_('Thunder').member_functions('getAllPlannerDatas').exclude()
+
+        self.ompl_ns.class_('Thunder').add_registration_code(
+            'def("getAllPlannerDatas", &__getAllPlannerDatas)',
+            r"""
+        boost::python::list __getAllPlannerDatas(%s *obj)
+        {
+            std::vector<ompl::base::PlannerDataPtr> v;
+            obj->getAllPlannerDatas(v);
+            boost::python::list out;
+            for (auto &pd : v)
+                out.append(pd);     // PlannerDataPtr is already exposed elsewhere
+            return out;
+        }
+        """
+        )
+
         self.ompl_ns.class_('Thunder').member_functions('printResultsInfo').exclude()
         self.ompl_ns.class_('Thunder').member_functions('print').exclude()
 
